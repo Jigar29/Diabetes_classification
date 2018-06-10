@@ -24,7 +24,10 @@ class DatasetDict:
         self.icd = []
         self.cpt = []
         self.rxnorm = []
-        self.high = self.low = self.normal = self.abnormal = 0
+        self.high = []
+        self.low = []
+        self.normal = []
+        self.abnormal = []
         self.tag_dm2 = 0
         return
 
@@ -58,8 +61,31 @@ class DatasetDict:
             self.rxnorm.append(rxnorm)
         return
 
+    def observaionClassification(self):
+        for feature in list:
+            high = normal = low = abnormal = 0
+            for observation in feature['observations']:
+                for dictionary in feature['observations'][observation]:
+                    if(dictionary['interpretation'] == 'H'):
+                        high = high + 1
+                    elif(dictionary['interpretation'] == 'L'):
+                        low = low + 1
+                    elif(dictionary['interpretation'] == 'A'):
+                        abnormal = abnormal + 1
+                    elif(dictionary['interpretation'] == 'N'):
+                        normal = normal + 1
+            self.high.append(high)
+            self.low.append(low)
+            self.abnormal.append(abnormal)
+            self.normal.append(normal)
+        return
+
+    def targetVariable(self):
+        
+        return
+
     def createADict(self):
-        self.dictionary = {'Age':self.age, 'IsMale':self.ismale, 'cpt': self.cpt, 'icd': self.icd, 'rxnorm':self.rxnorm }
+        self.dictionary = {'Age':self.age, 'IsMale':self.ismale, 'cpt': self.cpt, 'icd': self.icd, 'rxnorm':self.rxnorm, 'high': self.high, 'low':self.low, 'normal':self.normal, 'abnormal':self.abnormal}
         return
 
     def createCSV(self):
@@ -67,9 +93,10 @@ class DatasetDict:
         self.classifymale()
         self.createADict()
         self.resourceClassification()
-        pd.DataFrame.from_dict(instance.dictionary).to_csv('../data/dataset.csv')
+        self.observaionClassification()
+        pd.DataFrame.from_dict(self.dictionary).to_csv('../data/dataset.csv')
         return
 
 instance = DatasetDict()
-
 instance.createCSV()
+print(len(instance.high))
