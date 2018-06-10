@@ -13,12 +13,9 @@ def fetchDataFromJSON(filepath):
             ls.append(json.loads(line))
     return ls
 
-#Getting data in the python list
-list = fetchDataFromJSON('../data/train.txt')
-
 ##Creating the dataset dictionary
 class DatasetDict:
-    def __init__(self):
+    def __init__(self, filepath):
         self.age = []
         self.ismale = []
         self.icd = []
@@ -29,21 +26,22 @@ class DatasetDict:
         self.normal = []
         self.abnormal = []
         self.tag_dm2 = []
+        self.list = fetchDataFromJSON(filepath)
         return
 
     def calculateAge(self):
-        for i in list:
+        for i in self.list:
            self.age.append(int(((today - datetime.datetime.strptime((i['bday']), '%Y-%m-%d')).days) / 365))
         return
 
     def classifymale(self):
-        for i in list:
+        for i in self.list:
             self.ismale.append(i['is_male'])
         return
 
     def resourceClassification(self):
         i = []
-        for feature in list:
+        for feature in self.list:
             cpt = 0
             icd = 0
             rxnorm = 0
@@ -62,7 +60,7 @@ class DatasetDict:
         return
 
     def observaionClassification(self):
-        for feature in list:
+        for feature in self.list:
             high = normal = low = abnormal = 0
             for observation in feature['observations']:
                 for dictionary in feature['observations'][observation]:
@@ -81,26 +79,37 @@ class DatasetDict:
         return
 
     def targetVariable(self):
-        for feature in list:
+        for feature in self.list:
             if(feature['tag_dm2'] == ''):
                 self.tag_dm2.append(0)
             else:
                 self.tag_dm2.append(feature['tag_dm2'])
         return
 
-    def createADict(self):
-        self.dictionary = {'Age':self.age, 'IsMale':self.ismale, 'cpt': self.cpt, 'icd': self.icd, 'rxnorm':self.rxnorm, 'high': self.high, 'low':self.low, 'normal':self.normal, 'abnormal':self.abnormal, 'tag_dm2': self.tag_dm2}
+    def createADict(self, is_train):
+        if(is_train == True):
+            self.dictionary = {'Age':self.age, 'IsMale':self.ismale, 'cpt': self.cpt, 'icd': self.icd, 'rxnorm':self.rxnorm, 'high': self.high, 'low':self.low, 'normal':self.normal, 'abnormal':self.abnormal, 'tag_dm2': self.tag_dm2}
+        else:
+            self.dictionary = {'Age': self.age, 'IsMale': self.ismale, 'cpt': self.cpt, 'icd': self.icd,
+                               'rxnorm': self.rxnorm, 'high': self.high, 'low': self.low, 'normal': self.normal,
+                               'abnormal': self.abnormal}
         return
 
-    def createCSV(self):
+    def createCSV(self, is_train= True, data_set_name= None):
         self.calculateAge()
         self.classifymale()
-        self.createADict()
         self.resourceClassification()
         self.observaionClassification()
-        self.targetVariable()
-        pd.DataFrame.from_dict(self.dictionary).to_csv('../data/dataset.csv')
+        if(is_train == True):
+            self.targetVariable()
+        self.createADict(is_train)
+        pd.DataFrame.from_dict(self.dictionary).to_csv('../data/' +data_set_name+ '.csv')
         return
 
-instance = DatasetDict()
-instance.createCSV()
+#Creating the training dataset
+training_instance = DatasetDict('../data/train.txt')
+training_instance.createCSV(is_train= True, data_set_name= 'dataset')
+
+#Creating the test Dataset
+test_instance = DatasetDict('../data/test.txt')
+test_instance.createCSV(is_train=False, data_set_name='Test_dataset')
