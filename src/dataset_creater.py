@@ -28,7 +28,7 @@ class DatasetDict:
         self.low = []
         self.normal = []
         self.abnormal = []
-        self.tag_dm2 = 0
+        self.tag_dm2 = []
         return
 
     def calculateAge(self):
@@ -81,11 +81,15 @@ class DatasetDict:
         return
 
     def targetVariable(self):
-        
+        for feature in list:
+            if(feature['tag_dm2'] == ''):
+                self.tag_dm2.append(0)
+            else:
+                self.tag_dm2.append(feature['tag_dm2'])
         return
 
     def createADict(self):
-        self.dictionary = {'Age':self.age, 'IsMale':self.ismale, 'cpt': self.cpt, 'icd': self.icd, 'rxnorm':self.rxnorm, 'high': self.high, 'low':self.low, 'normal':self.normal, 'abnormal':self.abnormal}
+        self.dictionary = {'Age':self.age, 'IsMale':self.ismale, 'cpt': self.cpt, 'icd': self.icd, 'rxnorm':self.rxnorm, 'high': self.high, 'low':self.low, 'normal':self.normal, 'abnormal':self.abnormal, 'tag_dm2': self.tag_dm2}
         return
 
     def createCSV(self):
@@ -94,9 +98,9 @@ class DatasetDict:
         self.createADict()
         self.resourceClassification()
         self.observaionClassification()
+        self.targetVariable()
         pd.DataFrame.from_dict(self.dictionary).to_csv('../data/dataset.csv')
         return
 
 instance = DatasetDict()
 instance.createCSV()
-print(len(instance.high))
