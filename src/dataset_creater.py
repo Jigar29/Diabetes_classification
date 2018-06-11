@@ -103,7 +103,7 @@ class DatasetDict:
         if(is_train == True):
             self.targetVariable()
         self.createADict(is_train)
-        pd.DataFrame.from_dict(self.dictionary).to_csv('../data/' +data_set_name+ '.csv')
+        pd.DataFrame.from_dict(self.dictionary).to_csv('../data/' +data_set_name+ '.csv') #tobefixed
         return
 
 #Creating the training dataset

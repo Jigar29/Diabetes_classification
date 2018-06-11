@@ -32,16 +32,10 @@ class Preprocessing():
 
     def scalling(self):
         # Min-Max Scalling on the dataset
-        self.dataframe = self.scaler.fit_transform(self.dataframe)
+        self.dataframe = pd.DataFrame(self.scaler.fit_transform(self.dataframe))
         return
 
-##Preprocessing on Train data
-training_instance = Preprocessing(csv_filepath='../data/dataset.csv')
-training_instance.taregtVariableEncoder()
-training_instance.isMaleLabelEncoder()
-training_instance.scalling()
-
-## Preprocessing on Test Data
+# Preprocessing on Test Data
 test_instance = Preprocessing(csv_filepath='../data/Test_dataset.csv')
 test_instance.isMaleLabelEncoder()
 test_instance.scalling()
