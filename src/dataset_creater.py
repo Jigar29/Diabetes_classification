@@ -26,6 +26,7 @@ class DatasetDict:
         self.normal = []
         self.abnormal = []
         self.tag_dm2 = []
+        self.id = []
         self.list = fetchDataFromJSON(filepath)
         return
 
@@ -86,11 +87,16 @@ class DatasetDict:
                 self.tag_dm2.append(feature['tag_dm2'])
         return
 
+    def patientID(self):
+        for i in self.list:
+            self.id.append(i['patient_id'])
+        return
+
     def createADict(self, is_train):
         if(is_train == True):
             self.dictionary = {'Age':self.age, 'IsMale':self.ismale, 'cpt': self.cpt, 'icd': self.icd, 'rxnorm':self.rxnorm, 'high': self.high, 'low':self.low, 'normal':self.normal, 'abnormal':self.abnormal, 'tag_dm2': self.tag_dm2}
         else:
-            self.dictionary = {'Age': self.age, 'IsMale': self.ismale, 'cpt': self.cpt, 'icd': self.icd,
+            self.dictionary = {'patient_id': self.id, 'Age': self.age, 'IsMale': self.ismale, 'cpt': self.cpt, 'icd': self.icd,
                                'rxnorm': self.rxnorm, 'high': self.high, 'low': self.low, 'normal': self.normal,
                                'abnormal': self.abnormal}
         return
@@ -102,14 +108,16 @@ class DatasetDict:
         self.observaionClassification()
         if(is_train == True):
             self.targetVariable()
+        if(is_train == False):
+            self.patientID()
         self.createADict(is_train)
-        pd.DataFrame.from_dict(self.dictionary).to_csv('../data/' +data_set_name+ '.csv') #tobefixed
+        pd.DataFrame.from_dict(self.dictionary).to_csv(path_or_buf=data_set_name, index= False) #tobefixed
         return
 
 #Creating the training dataset
 training_instance = DatasetDict('../data/train.txt')
-training_instance.createCSV(is_train= True, data_set_name= 'dataset')
+training_instance.createCSV(is_train= True, data_set_name= '../data/dataset.csv')
 
 #Creating the test Dataset
 test_instance = DatasetDict('../data/test.txt')
-test_instance.createCSV(is_train=False, data_set_name='Test_dataset')
+test_instance.createCSV(is_train=False, data_set_name='../data/test_dataset.csv')

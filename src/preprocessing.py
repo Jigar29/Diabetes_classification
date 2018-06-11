@@ -30,12 +30,11 @@ class Preprocessing():
         self.dataframe['IsMale'] = self.labelencoder.fit_transform(self.dataframe['IsMale'])
         return
 
-    def scalling(self):
+    def scalling(self , istrain = True):
         # Min-Max Scalling on the dataset
-        self.dataframe = pd.DataFrame(self.scaler.fit_transform(self.dataframe))
+        if(istrain == True):
+            self.dataframe = pd.DataFrame(self.scaler.fit_transform(self.dataframe), columns= ['Age', 'IsMale','abnormal', 'cpt', 'high', 'icd', 'low', 'normal', 'rxnorm', 'tag_dm2'])
+        else:
+            self.dataframe = self.dataframe.drop(axis= 1, columns=['patient_id'])
+            self.dataframe = pd.DataFrame(self.scaler.fit_transform(self.dataframe),columns=['Age', 'IsMale', 'abnormal', 'cpt', 'high', 'icd', 'low', 'normal','rxnorm'])
         return
-
-# Preprocessing on Test Data
-test_instance = Preprocessing(csv_filepath='../data/Test_dataset.csv')
-test_instance.isMaleLabelEncoder()
-test_instance.scalling()
