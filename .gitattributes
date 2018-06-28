@@ -1,2 +1,6 @@
+data/test.txt filter=lfs diff=lfs merge=lfs -text
+data/train.txt filter=lfs diff=lfs merge=lfs -text
+data/dataset.csv filter=lfs diff=lfs merge=lfs -text
+data/Test_dataset.csv filter=lfs diff=lfs merge=lfs -text
 *.txt filter=lfs diff=lfs merge=lfs -text
 *.csv filter=lfs diff=lfs merge=lfs -text

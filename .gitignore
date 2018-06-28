@@ -1,4 +1,2 @@
 .idea/*
 src/__pycache__/*
-data/train.txt
-data/test.txt
